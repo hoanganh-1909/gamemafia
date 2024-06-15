@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Mafia</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif; 
+            font-size: 15px;
+            text-align: justify;
+        }
+        .button {
+            border: none;
+            color: white;
+            padding: 12px 28px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 15px;
+            margin: 2px 1px;
+            cursor: pointer;
+        }
+        
+        .button1 {
+            background-color: white; 
+            color: black; 
+            border: 2px solid #4CAF50;
+        }
+
+        .button1:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        input[type="number"] {
+            width: 200px;
+            height: 40px;
+            font-size: 15px;
+        }
+
+        #container {
+            width: 200px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .square {
+            width: 75px;
+            height: 75px;
+            border: 1px solid #38823b;
+            text-align: center;
+            line-height: 75px;
+            font-size: 48px;
+        }
+
+        .myDiv {
+            padding: 15px 20px;
+            background-color: #ebf6e0;
+            border-radius: 2px;
+            border: 1px solid #b3dc82; 
+            box-sizing: border-box; 
+            float: none; 
+            outline: 0px; 
+            vertical-align: baseline; 
+            color: #5f9025;
+        }
+
+        /* Extra small devices (phones, 600px and down) */
+        @media only screen and (max-width: 600px) {
+            .myDiv {
+                width: 100%;
+                margin: auto; 
+            }
+        }
+
+        /* Small devices (portrait tablets and large phones, 600px and up) */
+        @media only screen and (min-width: 600px) {
+            .myDiv {
+                width: 100%;
+                margin: auto; 
+            }
+        }
+
+        /* Medium devices (landscape tablets, 768px and up) */
+        @media only screen and (min-width: 768px) {
+            .myDiv {
+                    width: 75%;
+                    margin: auto; 
+            }
+        } 
+
+        /* Large devices (laptops/desktops, 992px and up) */
+        @media only screen and (min-width: 992px) {
+            .myDiv {
+                    width: 50%;
+                    margin: auto; 
+            }
+        }
+
+        /* Extra large devices (large laptops and desktops, 1200px and up) */
+        @media only screen and (min-width: 1200px) {
+            .myDiv {
+                    width: 50%;
+                    margin: auto; 
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="myDiv">
+        <center>
+            <div style="font-size: 48px;"><b>Game Mafia</b></div><br>
+            <img src="https://1.bp.blogspot.com/-VITACgX0iEY/WdyD9Zh6ZtI/AAAAAAABHhI/9QFFCiFPMwEApD2-iyh9zVnn49bSJ8-agCLcBGAs/s800/spy_cat.png" height="40%" width="40%" alt="" />
+        </center>
+        <div style="font-size: 24px;"><b>Rules</b></div>
+        <button onclick="ruleButton()" class="button">Show</button>
+
+        <div id="rule" style="display:none;">
+            After you press play button in the below, the computer will randomly select a 4-digit number with distinct digits.<br>
+            Try to guess it!<br><br>
+            If the number you guess has digits that match both in value and position with any digit of the random number, then those digits are called 'hits'.<br><br>
+            <i>Example: The random number is 1234. You guess 1567. The computer will say "There are 1 hit(s) and 0 blow(s)".</i><br><br>
+            If the number you guess has digits that match with the digits of the random number but are not in the same position, then those digits are called 'blows'.<br><br>
+            <i>Example: The random number is 1234. You guess 4321. The computer will say "There are 0 hit(s) and 4 blow(s)".</i><br><br>
+            You have 10 attempts to find the correct number.<br><br>
+        </div>
+
+        <center>
+            <button onclick="playGame()" class="button button1">Play</button><br><br>
+            <div style="width: 300px; margin: 0px auto;">
+                <div id="container">
+                    <div id="timer">Attempts left<br>
+                        <div class="square"><b><span id="attempts">10</span></b></div>
+                    </div>
+                    <div id="timer">Time left (s)<br>
+                        <div class="square"><b><span id="countdown">30</span></b></div>
+                    </div>
+                </div>
+            </div>
+
+            <p><input id="numberInput" type="number" /></p>
+            <button onclick="submitGuess()" class="button button1">Send</button><br><br>
+            <p id="result"></p>
+            <p id="guess"></p>
+        </center>
+    </div>
+    <script>           
+        var gameEnded = false;
+
+        var randomNumber_array;
+        var guess_array;
+
+        var attemptsLeft = 10;
+
+        var timer;
+        var timeLeft = 30; 
+
+        function playGame() {
+            gameEnded = false;
+            randomNumber_array = [];
+
+            document.getElementById("result").innerHTML = "";
+
+            guess_array = [];
+            document.getElementById("guess").innerHTML = "";
+		
+            attemptsLeft = 10;
+            document.getElementById("attempts").innerHTML = attemptsLeft;
+
+            timeLeft = 30; 
+            startTimer();
+
+            var randomNumber = Math.floor(Math.random() * 9) + 1;
+            var randomNumber_string = randomNumber.toString();
+            randomNumber_array.push(randomNumber_string);
+            let r = 0;
+            while (r < 3) {
+                var randomNumber2 = Math.floor(Math.random() * 10);
+                var randomNumber2_string = randomNumber2.toString();
+                if (!randomNumber_array.includes(randomNumber2_string)) {
+                    randomNumber_array.push(randomNumber2_string);
+                    r++;
+                }
+            }
+
+            alert("A new random number was selected! You have 10 attempts to guess it.");
+            document.getElementById("randomNumber").innerHTML = randomNumber_array.toString();
+        }
+
+        function startTimer() {
+            if (gameEnded) {
+                return;
+            }
+
+            document.getElementById('countdown').innerText = timeLeft;
+            
+            timer = setInterval(function () {
+                if (timeLeft === 0) {
+                    clearInterval(timer);
+                    alert("Time's up! You lose.");
+                    gameEnded = true; 
+                } else {
+                    timeLeft--;
+                    document.getElementById('countdown').innerText = timeLeft;
+                }
+            }, 1000);
+        }
+
+        
+        function submitGuess() {
+            if (gameEnded) {
+                return;
+            }
+
+            var userInput = document.getElementById("numberInput").value;
+            if (/^\d{4}$/.test(userInput) && new Set(userInput).size === 4) {
+                clearInterval(timer); 
+
+                var userInput_string = userInput.toString();
+
+                guess_array.push(userInput_string);
+                document.getElementById("guess").innerHTML = "You guess: " + guess_array.join(" ");
+
+                var userInput_array = userInput_string.split('');
+                let hit = 0;
+                let blow = 0;
+
+                for (let x = 0; x < userInput_array.length; x++) {
+                    if (userInput_array[x] == randomNumber_array[x]) {
+                        hit++;
+                    } else if (randomNumber_array.includes(userInput_array[x])) {
+                        blow++;
+                    }
+                }
+
+                if (hit === 4) {
+                    document.getElementById("result").innerHTML = "You won!";
+                    gameEnded = true; 
+                } else {
+                    attemptsLeft--;
+                    document.getElementById("result").innerHTML = "There are " + hit + " hit(s) and " + blow + " blow(s).";
+                    document.getElementById("attempts").innerHTML = attemptsLeft;
+                    timeLeft = 30;
+                    startTimer();
+
+                    if (attemptsLeft === 0) {
+                        clearInterval(timer);
+                        document.getElementById("result").innerHTML = "Game over. The correct number was " + randomNumber_array.join('') + ".";
+                        gameEnded = true; 
+                    }
+                }
+            } else {
+                alert("Invalid input. Please enter a 4-digit number with different digits.");
+            }
+        }
+
+        function ruleButton()  {
+            var rule = document.getElementById('rule');
+            if (rule.style.display === 'none') {
+                rule.style.display = 'block';
+            } else {
+                rule.style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+
+</html>

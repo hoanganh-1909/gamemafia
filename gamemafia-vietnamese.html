@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Game Mafia</title>
+    <style>
+        body {
+            background-color: #38823b;
+            width: 500px;
+            margin: auto;
+            font-family: 'Arial', sans-serif; 
+            font-size: 15px;
+        }
+        .button {
+            border: none;
+            color: white;
+            padding: 12px 28px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 15px;
+            margin: 2px 1px;
+            cursor: pointer;
+        }
+        
+        .button1 {
+            background-color: white; 
+            color: black; 
+            border: 2px solid #4CAF50;
+        }
+
+        .button1:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        input[type="number"] {
+            width: 200px;
+            height: 40px;
+            font-size: 15px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div style="background: #ebf6e0; border-radius: 2px; border: 1px solid #b3dc82; box-sizing: border-box; float: none; margin: 0px auto; outline: 0px; padding: 15px 20px; vertical-align: baseline; color: #5f9025;">
+        <center>
+            <div style="font-size: 24px;"><b>Game Mafia</b></div><br>
+            <img src="https://1.bp.blogspot.com/-VITACgX0iEY/WdyD9Zh6ZtI/AAAAAAABHhI/9QFFCiFPMwEApD2-iyh9zVnn49bSJ8-agCLcBGAs/s800/spy_cat.png" height="20%" width="20%" alt="" />
+        </center>
+        <div style="font-size: 18px;"><b>Rules:</b></div>
+
+        <div style="width: 400px; margin: 0px auto;"><p align="justify">
+            Sau khi bạn click vào nút play dưới đây, máy tính sẽ chọn ra ngẫu nhiên 1 số gồm 4 chữ số khác nhau. 
+            Nhiệm vụ của bạn là phải đoán ra số đó.<br><br>
+            Nếu số bạn đưa ra có chữ số trùng với 1 trong các chữ số của số cần đoán nhưng không trùng vị trí, thì số đó sẽ gọi là 'thương'.<br>
+            <i>Ví dụ: Số cần đoán là 1234. Bạn đoán là 4321. Máy tính sẽ nói là 'có 4 thương'.</i><br><br>
+            Nếu số bạn đưa ra có chữ số trùng cả số lẫn vị trí với 1 trong các chữ số cần đoán, thì số đó sẽ gọi là 'chết'.<br>
+            <i>Ví dụ: Số cần đoán là 1234. Bạn đoán là 1567. Máy tính sẽ nói là 'có 1 chết'.</i><br><br>
+            Bạn có 10 lần đoán để tìm ra số đúng.<br><br>
+        </p></div>
+
+        <script>
+            var attemptsLeft = 10;
+            var randomNumber_array;
+            var gameEnded = false;
+            var guess_array;
+
+            var timer;
+            var timeLeft = 30; 
+
+            function playGame() {
+                gameEnded = false;
+                randomNumber_array = [];
+                guess_array = [];
+
+                timeLeft = 30; 
+                startTimer();
+
+                var randomNumber = Math.floor(Math.random() * 9) + 1;
+                var randomNumber_string = randomNumber.toString();
+                randomNumber_array.push(randomNumber_string);
+                let r = 0;
+                while (r < 3) {
+                    var randomNumber2 = Math.floor(Math.random() * 10);
+                    var randomNumber2_string = randomNumber2.toString();
+                    if (!randomNumber_array.includes(randomNumber2_string)) {
+                        randomNumber_array.push(randomNumber2_string);
+                        r++;
+                    }
+                }
+
+                attemptsLeft = 10;
+                alert("Máy tính đã chọn ra 1 số ngẫu nhiên gồm 4 chữ số khác nhau! Bạn có 10 lần để đoán.");
+                document.getElementById("randomNumber").innerHTML = randomNumber_array.toString();
+            }
+
+            function startTimer() {
+                if (gameEnded) {
+                    return;
+                }
+
+                document.getElementById('countdown').innerText = timeLeft;
+                timer = setInterval(function () {
+                    if (timeLeft === 0) {
+                        clearInterval(timer);
+                        alert("Hết giờ! Bạn đã thua.");
+                        gameEnded = true; 
+                    } else {
+                        timeLeft--;
+                        document.getElementById('countdown').innerText = timeLeft;
+                    }
+                }, 1000);
+            }
+
+            
+            function submitGuess() {
+                if (gameEnded) {
+                    return;
+                }
+
+                var userInput = document.getElementById("numberInput").value;
+                if (/^\d{4}$/.test(userInput) && new Set(userInput).size === 4) {
+                    clearInterval(timer); 
+
+                    var userInput_string = userInput.toString();
+
+                    guess_array.push(userInput_string);
+                    document.getElementById("guess").innerHTML = "Số bạn đã đoán: " + guess_array.join(" ");
+
+                    var userInput_array = userInput_string.split('');
+                    let hit = 0;
+                    let blow = 0;
+
+                    for (let x = 0; x < userInput_array.length; x++) {
+                        if (userInput_array[x] == randomNumber_array[x]) {
+                            hit++;
+                        } else if (randomNumber_array.includes(userInput_array[x])) {
+                            blow++;
+                        }
+                    }
+
+                    if (hit === 4) {
+                        document.getElementById("result").innerHTML = "Chính xác!";
+                        gameEnded = true; 
+                    } else {
+                        attemptsLeft--;
+                        document.getElementById("result").innerHTML = "Có " + hit + " chết và " + blow + " thương. Bạn còn " + attemptsLeft + " số lần đoán.";
+                        timeLeft = 30;
+                        startTimer();
+
+                        if (attemptsLeft === 0) {
+                            document.getElementById("result").innerHTML = "Bạn đã thua! Đáp án là " + randomNumber_array.join('') + ".";
+                            gameEnded = true; 
+                        }
+                    }
+                } else {
+                    alert("Giá trị bạn nhập không hợp lệ. Vui lòng điền 1 số gồm 4 chữ số khác nhau.");
+                }
+            }
+        </script>
+
+        <center>
+            <button onclick="playGame()" class="button button1">Play</button><br><br>
+
+            <div id="timer">Bạn còn <span id="countdown">30</span> giây.</div>
+
+            <p><input id="numberInput" type="number" /></p>
+            <button onclick="submitGuess()" class="button button1">Send</button><br><br>
+            <p id="result"></p>
+            <p id="guess"></p>
+        </center>
+    </div>
+
+</body>
+
+</html>
